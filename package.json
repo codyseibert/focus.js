@@ -1,0 +1,23 @@
+{
+  "name": "focus",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lib/index.coffee",
+  "bin": {
+    "focus": "bin/index.coffee"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "copy": "^0.2.0",
+    "filewalker": "^0.1.2",
+    "lodash": "^4.11.1",
+    "mkdirp": "^0.5.1",
+    "mustache": "^2.2.1",
+    "node-mkdirp": "0.0.1"
+  },
+  "preferGlobal": "true"
+}
