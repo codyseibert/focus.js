@@ -7,6 +7,11 @@ Mustache = require 'mustache'
 mkdirp = require 'mkdirp'
 _ = require 'lodash'
 
+toTitleCase = (str) ->
+  return str.replace(/\w\S*/g, (txt) ->
+    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+  )
+
 config = require path.resolve(process.cwd(), 'focus.json')
 
 # TODO
@@ -45,6 +50,12 @@ convertAsset = (src, dest, model) ->
 module.exports.init = ->
   convertAsset 'client/gulpfile.coffee', 'build/client/gulpfile.coffee', config
   convertAsset 'client/gulpfile.js', 'build/client/gulpfile.js', config
+  convertAsset 'client/package.json', 'build/client/package.json', config
+  convertAsset 'client/app.sass', 'build/client/src/app.sass', config
+
+  convertAsset 'server/package.json', 'build/server/package.json', config
+  convertAsset 'server/app.coffee', 'build/server/src/app.coffee', config
+  convertAsset 'server/sequelize.coffee', 'build/server/src/sequelize.coffee', config
 
 module.exports.compile = ->
   convertAsset 'client/app.coffee', 'build/client/src/app.coffee', config
@@ -63,7 +74,6 @@ module.exports.compile = ->
         states[state][file] = n
       )
       .on('done', ->
-        console.log states
         resolve states
       )
       .walk()
@@ -71,9 +81,17 @@ module.exports.compile = ->
     model =
       states: []
     for key, state of states
-      model.states.push
+      obj =
+        module: config.name
         name: key
-    console.log model
+        url: require(state['controller.coffee']).url or "/#{key}"
+        controller:
+          name: key
+      model.states.push obj
+      convertAsset 'client/controller.coffee', "build/client/src/#{key}/#{key}Controller.coffee", obj
+      convertAsset 'client/controller.index.coffee', "build/client/src/#{key}/index.coffee", obj
+      convertAsset 'client/template.jade', "build/client/src/#{key}/#{key}.jade", obj
+
     convertAsset 'client/routes.coffee', 'build/client/src/routes.coffee', model
 
   new Promise (resolve, reject) ->
@@ -94,20 +112,27 @@ module.exports.compile = ->
   .then (models) ->
     for key, file of models
       convertAsset 'client/service.coffee', "build/client/src/services/#{key}Service.coffee", name: key
+      convertAsset 'server/controller.coffee', "build/server/src/controllers/#{key}Controller.coffee",
+        name: key
+        titleCase: toTitleCase key
+
+      m = require file
+      attributes = []
+      for name, value of m.attributes
+        attributes.push
+          name: name
+          type: value.type
+      convertAsset 'server/model.coffee', "build/server/src/models/#{key}.coffee",
+        name: key
+        titleCase: toTitleCase key
+        attributes: attributes
+
+    convertAsset 'server/routes.coffee', "build/server/src/routes.coffee",
+      models: Object.keys models
 
     convertAsset 'client/services.index.coffee', "build/client/src/services/index.coffee",
       name: config.name
       services: Object.keys models
 
-  #
-  # new Promise (resolve, reject) ->
-  #   filewalker 'src/components'
-  #     .on('dir', (p) ->
-  #     )
-  #     .on('file', (p, s, n) ->
-  #       console.log n
-  #     )
-  #     .on('done', ->
-  #       resolve()
-  #     )
-  #     .walk()
+    convertAsset 'server/server.coffee', "build/server/src/server.coffee",
+      models: Object.keys models

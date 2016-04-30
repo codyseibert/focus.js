@@ -22,11 +22,11 @@ gulp.task 'copy', ['jade'], ->
     .pipe gulp.dest('dist')
     .pipe connect.reload()
 
-  gulp.src('app/assets/**/*')
+  gulp.src('assets/**/*')
     .pipe gulp.dest('dist/assets')
 
 gulp.task 'jade', ->
-  gulp.src 'app/src/**/*.jade'
+  gulp.src 'src/**/*.jade'
     .pipe jade
       pretty: true
     .pipe gulp.dest 'tmp/templates'
@@ -41,13 +41,13 @@ gulp.task 'templates', ['jade'], ->
     .pipe connect.reload()
 
 gulp.task 'sass', ->
-  gulp.src('app/src/app.sass')
+  gulp.src('src/app.sass')
     .pipe(sass().on('error', gutil.log))
     .pipe(gulp.dest('dist'))
     .pipe connect.reload()
 
 gulp.task 'coffee', ->
-  gulp.src('app/src/**/*.coffee')
+  gulp.src('src/**/*.coffee')
     .pipe(coffee({bare: true})
     .on('error', gutil.log))
     .pipe(gulp.dest('tmp/js'))
@@ -64,19 +64,19 @@ gulp.task 'connect', ->
     livereload: true
 
 gulp.task 'watch', ->
-  gulp.watch 'app/src/index.jade', [
+  gulp.watch 'src/index.jade', [
     'copy'
   ]
 
-  gulp.watch ['app/src/**/*.jade', '!app/src/index.html'], [
+  gulp.watch ['src/**/*.jade', '!src/index.html'], [
     'templates'
   ]
 
-  gulp.watch 'app/src/**/*.sass', [
+  gulp.watch 'src/**/*.sass', [
     'sass'
   ]
 
-  gulp.watch 'app/src/**/*.coffee', [
+  gulp.watch 'src/**/*.coffee', [
     'scripts'
   ]
 

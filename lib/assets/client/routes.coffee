@@ -7,10 +7,10 @@ module.exports = (
   $stateProvider
     {{#states}}
     .state '{{name}}',
-      url: '/{{name}}'
+      url: '{{{url}}}'
       views:
         'main':
-          controller: '{{name}}Ctrl'
+          controller: '{{name}}Controller'
           templateUrl: '{{name}}/{{name}}.html'
     {{/states}}
 
