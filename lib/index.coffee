@@ -14,29 +14,6 @@ toTitleCase = (str) ->
 
 config = require path.resolve(process.cwd(), 'focus.json')
 
-# TODO
-# build
-# 1. generate the app.coffee file into build          build/client/src/app.coffee
-# 2. generate the default index.jade into build       build/client/src/index.jade
-# 4. generate routes.coffee using states into         build/client/src/routes.coffee
-# 6. generate all directives using components into    build/client/src/components
-# 8. generate all services using models into          build/client/src/services
-# 9. generate sequelize models into                   build/server/src/models
-# 10. generate express controllers into               build/server/src/controllers
-# 11. generate routes into                            build/server/src/routes.coffee
-# 12. generate the express app into                   build/server/src/app.coffee
-# 12. generate the sequelize hook into                build/server/src/sequelize.coffee
-#
-# # dist
-# 14. compile all sass                                dist/client/app.css
-# 14. compile all bower dependencie                   dist/client/bower.js
-# 14. compile all coffee                              dist/client/app.js
-# 14. compile all templates                           dist/client/templates.js
-#
-# # refresh
-# 13. restart the express services                    dist/server/app.
-# 14. refresh the browser
-
 convertAsset = (src, dest, model) ->
   split = dest.split(path.sep)
   split.pop()
@@ -53,6 +30,9 @@ module.exports.init = ->
   convertAsset 'client/package.json', 'build/client/package.json', config
   convertAsset 'client/app.sass', 'build/client/src/app.sass', config
 
+  convertAsset 'box.json', 'build/box.json', config
+  convertAsset 'Vagrantfile', 'build/Vagrantfile', config
+
   convertAsset 'server/package.json', 'build/server/package.json', config
   convertAsset 'server/app.coffee', 'build/server/src/app.coffee', config
   convertAsset 'server/sequelize.coffee', 'build/server/src/sequelize.coffee', config
@@ -63,7 +43,7 @@ module.exports.compile = ->
 
   new Promise (resolve, reject) ->
     states = {}
-    filewalker 'src/states'
+    filewalker 'focus/states'
       .on('dir', (p) ->
       )
       .on('file', (p, s, n) ->
@@ -96,7 +76,7 @@ module.exports.compile = ->
 
   new Promise (resolve, reject) ->
     models = {}
-    filewalker 'src/models'
+    filewalker 'focus/models'
       .on('dir', (p) ->
       )
       .on('file', (p, s, n) ->

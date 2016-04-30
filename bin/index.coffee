@@ -7,6 +7,6 @@ lib = require '../lib/index'
 if process.argv[2] is 'init'
   lib.init()
 else
-  watch.watchTree path.join(process.cwd(), 'src'), ->
+  watch.watchTree path.join(process.cwd(), 'focus'), ->
     console.log 'something changed'
     lib.compile()
