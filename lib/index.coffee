@@ -28,7 +28,6 @@ module.exports.init = ->
   convertAsset 'client/gulpfile.coffee', 'build/client/gulpfile.coffee', config
   convertAsset 'client/gulpfile.js', 'build/client/gulpfile.js', config
   convertAsset 'client/package.json', 'build/client/package.json', config
-  convertAsset 'client/app.sass', 'build/client/src/app.sass', config
 
   convertAsset 'box.json', 'build/box.json', config
   convertAsset 'Vagrantfile', 'build/Vagrantfile', config
@@ -69,16 +68,18 @@ module.exports.compile = ->
     model =
       states: []
     for key, state of states
+      index = require(state['index.coffee'])
       obj =
         module: config.name
         name: key
-        url: require(state['controller.coffee']).url or "/#{key}"
+        url: index.url or "/#{key}"
         controller:
           name: key
       model.states.push obj
       convertAsset 'client/controller.coffee', "build/client/src/#{key}/#{key}Controller.coffee", obj
       convertAsset 'client/controller.index.coffee', "build/client/src/#{key}/index.coffee", obj
-      convertAsset 'client/template.jade', "build/client/src/#{key}/#{key}.jade", obj
+
+      convertAsset "client/layouts/#{index.layout}.jade", "build/client/src/#{key}/#{key}.jade", index.components
 
     convertAsset 'client/routes.coffee', 'build/client/src/routes.coffee', model
 
@@ -124,3 +125,34 @@ module.exports.compile = ->
 
     convertAsset 'server/server.coffee', "build/server/src/server.coffee",
       models: Object.keys models
+
+
+
+  new Promise (resolve, reject) ->
+    components = {}
+    filewalker 'focus/components'
+      .on('dir', (p) ->
+      )
+      .on('file', (p, s, n) ->
+        split = n.split path.sep
+        file = split[split.length - 1]
+        component = split[split.length - 2]
+        components[component] ?= {}
+        components[component][file] = n
+      )
+      .on('done', ->
+        resolve components
+      )
+      .walk()
+  .then (components) ->
+    convertAsset 'client/components.index.coffee', "build/client/src/components/index.coffee",
+      name: config.name
+      components: Object.keys components
+
+    convertAsset 'client/app.sass', 'build/client/src/app.sass', components: Object.keys components
+
+    for key, component of components
+      for name, file of component
+        mkdirp "build/client/src/components/#{key}"
+        fs.createReadStream file
+          .pipe fs.createWriteStream "build/client/src/components/#{key}/#{name}"

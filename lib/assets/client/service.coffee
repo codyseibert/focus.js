@@ -12,7 +12,7 @@ module.exports = [
       $q (resolve, reject) ->
         $http.get "#{BASE_URL}/{{name}}s", params: searchParams
           .then ({{name}}s) ->
-            resolve {{name}}s
+            resolve {{name}}s.data
           .catch (err) ->
             reject (err)
 
@@ -20,7 +20,7 @@ module.exports = [
       $q (resolve, reject) ->
         $http.get "#{BASE_URL}/{{name}}s/#{id}"
           .then ({{name}}) ->
-            resolve {{name}}
+            resolve {{name}}.data
           .catch (err) ->
             reject (err)
 
@@ -28,7 +28,7 @@ module.exports = [
       $q (resolve, reject) ->
         $http.post "#{BASE_URL}/{{name}}s", {{name}}
           .then ({{name}}) ->
-            resolve {{name}}
+            resolve {{name}}.data
           .catch (err) ->
             reject (err)
 
@@ -36,7 +36,7 @@ module.exports = [
       $q (resolve, reject) ->
         $http.put "#{BASE_URL}/{{name}}s/" + {{name}}.id, {{name}}
           .then ({{name}}) ->
-            resolve {{name}}
+            resolve {{name}}.data
           .catch (err) ->
             reject (err)
 
@@ -44,7 +44,7 @@ module.exports = [
       $q (resolve, reject) ->
         $http.delete "#{BASE_URL}/{{name}}s/" + {{name}}.id
           .then ({{name}}) ->
-            resolve {{name}}
+            resolve {{name}}.data
           .catch (err) ->
             reject (err)
 

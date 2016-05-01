@@ -36,6 +36,7 @@ app.config [
 
 require './main'
 require './services'
+require './components'
 
 app.run [
   '$rootScope'
