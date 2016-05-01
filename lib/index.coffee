@@ -32,6 +32,14 @@ module.exports.init = ->
 
   convertAsset 'box.json', 'build/box.json', config
   convertAsset 'Vagrantfile', 'build/Vagrantfile', config
+  convertAsset 'puppet.sh', 'build/puppet.sh', config
+  convertAsset 'provision.sh', 'build/provision.sh', config
+  convertAsset 'Vagrantfile', 'build/Vagrantfile', config
+  convertAsset 'Puppetfile', 'build/Puppetfile', config
+  convertAsset 'manifests/init.pp', 'build/manifests/init.pp', config
+  convertAsset 'manifests/role/prod.pp', 'build/manifests/role/prod.pp', config
+  convertAsset 'manifests/profile/db.pp', 'build/manifests/profile/db.pp', config
+  convertAsset 'manifests/profile/httpd.pp', 'build/manifests/profile/httpd.pp', config
 
   convertAsset 'server/package.json', 'build/server/package.json', config
   convertAsset 'server/app.coffee', 'build/server/src/app.coffee', config
