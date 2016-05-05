@@ -1,6 +1,7 @@
 Promise = require 'bluebird'
 _ = require 'underscore'
 {{titleCase}} = require '../models/{{name}}'
+filter = require '../helpers/filter'
 
 module.exports = do ->
 

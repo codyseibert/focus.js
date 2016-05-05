@@ -9,6 +9,8 @@ sass = require 'gulp-sass'
 ngTemplates = require 'gulp-ng-templates'
 gulpIgnore = require 'gulp-ignore'
 connect = require 'gulp-connect'
+proxy = require 'http-proxy-middleware'
+modRewrite = require 'connect-modrewrite'
 
 gulp.task 'clean', ->
   del.sync [ 'tmp', 'build', 'dist' ]
@@ -62,6 +64,12 @@ gulp.task 'connect', ->
   connect.server
     root: 'dist'
     livereload: true
+    middleware: (connect, opt) ->
+      [
+        modRewrite([
+          '^/api/(.*)$ http://localhost:8081/$1 [P]'
+        ])
+      ]
 
 gulp.task 'watch', ->
   gulp.watch 'src/index.jade', [

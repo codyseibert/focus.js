@@ -20,7 +20,7 @@ app = require('angular').module('{{name}}', [
   'ui.bootstrap'
   'duScroll'
 ])
-app.constant 'BASE_URL', 'http://localhost:8081'
+app.constant 'BASE_URL', "#{location.protocol}//#{location.host}/api"
 app.value('duScrollDuration', 500)
 app.value('duScrollOffset', 80)
 app.config require './routes'

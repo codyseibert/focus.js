@@ -4,9 +4,10 @@ path = require 'path'
 
 lib = require '../lib/index'
 
-if process.argv[2] is 'init'
+focus = ->
   lib.init()
-else
-  watch.watchTree path.join(process.cwd(), 'focus'), ->
-    console.log 'something changed'
-    lib.compile()
+  lib.compile()
+
+watch.watchTree path.join(process.cwd(), 'focus'), ->
+  console.log 'Let\s Focus!'
+  focus()

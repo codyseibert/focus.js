@@ -13,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "copy": "^0.2.0",
+    "copy-dir": "0.0.8",
     "filewalker": "^0.1.2",
     "lodash": "^4.11.1",
     "mkdirp": "^0.5.1",

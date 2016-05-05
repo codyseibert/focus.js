@@ -2,10 +2,13 @@
 path = require 'path'
 filewalker = require 'filewalker'
 copy = require 'copy'
+copyDir = require 'copy-dir'
 fs = require 'fs'
 Mustache = require 'mustache'
 mkdirp = require 'mkdirp'
 _ = require 'lodash'
+
+global.maxFilesInFlight = 100
 
 toTitleCase = (str) ->
   return str.replace(/\w\S*/g, (txt) ->
@@ -14,17 +17,32 @@ toTitleCase = (str) ->
 
 config = require path.resolve(process.cwd(), 'focus.json')
 
+lastPromise = null
 convertAsset = (src, dest, model) ->
-  split = dest.split(path.sep)
-  split.pop()
-  folder = split.join path.sep
-  mkdirp path.resolve(process.cwd(), folder), (err) ->
-    if not err?
-      file = fs.readFileSync path.resolve(__dirname, 'assets', src), 'utf8'
-      output = Mustache.render file, model
-      fs.writeFileSync path.resolve(process.cwd(), dest), output
+  promise = new Promise (resolve, reject) ->
+    split = dest.split(path.sep)
+    split.pop()
+    folder = split.join path.sep
+    mkdirp path.resolve(process.cwd(), folder), (err) ->
+      if not err?
+        file = fs.readFileSync path.resolve(__dirname, 'assets', src), 'utf8'
+        output = Mustache.render file, model
+        fs.writeFileSync path.resolve(process.cwd(), dest), output
+        resolve()
+      else
+        reject err
+  if not lastPromise?
+    lastPromise = promise
+  else
+    lastPromise.then promise
+    lastPromise = promise
 
 module.exports.init = ->
+
+  source = path.resolve process.cwd(), 'focus/assets'
+  sink = path.resolve process.cwd(), 'build/client/assets'
+  copyDir source, sink
+
   convertAsset 'client/gulpfile.coffee', 'build/client/gulpfile.coffee', config
   convertAsset 'client/gulpfile.js', 'build/client/gulpfile.js', config
   convertAsset 'client/package.json', 'build/client/package.json', config
@@ -43,6 +61,7 @@ module.exports.init = ->
   convertAsset 'server/package.json', 'build/server/package.json', config
   convertAsset 'server/app.coffee', 'build/server/src/app.coffee', config
   convertAsset 'server/sequelize.coffee', 'build/server/src/sequelize.coffee', config
+  convertAsset 'server/filter.coffee', 'build/server/src/helpers/filter.coffee', config
 
 module.exports.compile = ->
   convertAsset 'client/app.coffee', 'build/client/src/app.coffee', config
@@ -103,7 +122,7 @@ module.exports.compile = ->
       convertAsset 'client/service.coffee', "build/client/src/services/#{key}Service.coffee", name: key
       convertAsset 'server/controller.coffee', "build/server/src/controllers/#{key}Controller.coffee",
         name: key
-        titleCase: toTitleCase key
+        titleCase: key #toTitleCase key
 
       m = require file
       attributes = []
@@ -111,9 +130,10 @@ module.exports.compile = ->
         attributes.push
           name: name
           type: value.type
+
       convertAsset 'server/model.coffee', "build/server/src/models/#{key}.coffee",
         name: key
-        titleCase: toTitleCase key
+        titleCase: key #toTitleCase key
         attributes: attributes
 
     convertAsset 'server/routes.coffee', "build/server/src/routes.coffee",
