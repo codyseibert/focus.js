@@ -170,6 +170,7 @@ module.exports.compile = ->
       components: Object.keys components
 
     convertAsset 'client/app.sass', 'build/client/src/app.sass', components: Object.keys components
+    fs.createReadStream('focus/main.sass').pipe fs.createWriteStream 'build/client/src/main.sass'
 
     for key, component of components
       for name, file of component
