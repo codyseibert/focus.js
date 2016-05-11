@@ -133,6 +133,9 @@ module.exports.compile = ->
       index = require(state['index.coffee'])
       obj =
         module: config.name
+        view: index.view
+        state: index.state
+        abstract: index.abstract
         name: key
         url: index.url or "/#{key}"
         controller:
