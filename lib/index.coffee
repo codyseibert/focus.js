@@ -67,6 +67,21 @@ module.exports.compile = ->
   convertAsset 'client/index.jade', 'build/client/src/index.jade', config
 
   new Promise (resolve, reject) ->
+    filewalker 'focus/data'
+      .on('dir', (p) ->
+      )
+      .on('file', (p, s, n) ->
+        split = n.split path.sep
+        file = split[split.length - 1]
+        mkdirp 'build/server/src/data'
+        fs.createReadStream("focus/data/#{file}").pipe fs.createWriteStream "build/server/src/data/#{file}"
+      )
+      .on('done', ->
+        resolve()
+      )
+      .walk()
+
+  new Promise (resolve, reject) ->
     controllers = {}
     filewalker 'focus/controllers'
       .on('dir', (p) ->
