@@ -4,6 +4,7 @@ require 'angular-filter'
 require 'angular-local-storage'
 require 'angular-animate'
 require 'ng-lodash'
+require 'angular-toggle-switch'
 require '../../node_modules/angular-ui-bootstrap/dist/ui-bootstrap-tpls'
 require 'angular-scroll'
 
@@ -12,12 +13,14 @@ app = require('angular').module('{{name}}', [
   require 'angular-resource'
   require 'angular-sanitize'
   require 'angular-moment'
+  require 'ng-file-upload'
   'ngAnimate'
   'duScroll'
   'angular.filter'
   'LocalStorageModule'
   'ngLodash'
   'ui.bootstrap'
+  'toggle-switch'
   'duScroll'
 ])
 app.constant 'BASE_URL', "#{location.protocol}//#{location.host}/api"
@@ -34,7 +37,11 @@ app.config [
       .setPrefix '{{name}}'
 ]
 
-require './main'
+{{#states}}
+require './{{name}}'
+{{/states}}
+
+require './models'
 require './services'
 require './components'
 

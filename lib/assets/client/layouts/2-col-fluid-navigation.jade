@@ -1,19 +1,14 @@
-.col-3-fluid-with-banner
+.col-2-fluid-navigation
   header
     
   .fluid-wrapper
-    .container-fluid.banner
-      .row
-        {{banner}}
-        
-  .fluid-wrapper
     .container-fluid.content
       .row
+        .col-md-2
+          navigation
+
         .col-md-{{cols.left}}.left
           {{left}}
-
-        .col-md-{{cols.middle}}.middle
-          {{middle}}
 
         .col-md-{{cols.right}}.right
           {{right}}

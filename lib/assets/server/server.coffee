@@ -1,4 +1,5 @@
 require './routes'
+require './extraRoutes'
 {{#models}}
 require './models/{{.}}'
 {{/models}}

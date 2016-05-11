@@ -30,7 +30,8 @@ module.exports = do ->
           res.status 400
           res.send '{{name}} not found'
         else
-          {{name}}.destroy()
+          _.extend {{name}}, req.body
+          {{name}}.save()
             .then ({{name}}) ->
               res.status 200
               res.send {{name}}

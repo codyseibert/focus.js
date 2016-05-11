@@ -64,8 +64,51 @@ module.exports.init = ->
   convertAsset 'server/filter.coffee', 'build/server/src/helpers/filter.coffee', config
 
 module.exports.compile = ->
-  convertAsset 'client/app.coffee', 'build/client/src/app.coffee', config
   convertAsset 'client/index.jade', 'build/client/src/index.jade', config
+
+  new Promise (resolve, reject) ->
+    controllers = {}
+    filewalker 'focus/controllers'
+      .on('dir', (p) ->
+      )
+      .on('file', (p, s, n) ->
+        split = n.split path.sep
+        file = split[split.length - 1]
+        controllers[file] ?= n
+      )
+      .on('done', ->
+        resolve controllers
+      )
+      .walk()
+  .then (controllers) ->
+    for key, controller of controllers
+      fs.createReadStream(controller).pipe fs.createWriteStream "build/server/src/controllers/#{key}"
+
+    fs.createReadStream('focus/routes/extraRoutes.coffee').pipe fs.createWriteStream "build/server/src/extraRoutes.coffee"
+
+  new Promise (resolve, reject) ->
+    services = {}
+    filewalker 'focus/services'
+      .on('dir', (p) ->
+      )
+      .on('file', (p, s, n) ->
+        split = n.split path.sep
+        file = split[split.length - 1]
+        services[file] ?= n
+      )
+      .on('done', ->
+        resolve services
+      )
+      .walk()
+  .then (services) ->
+    for key, service of services
+      name = key.split('.')[0]
+      fs.createReadStream(service).pipe fs.createWriteStream "build/client/src/services/#{name}Service.coffee"
+
+    convertAsset 'client/services.index.coffee', "build/client/src/services/index.coffee",
+      name: config.name
+      services: Object.keys(services).map (key) ->
+        key.split('.')[0]
 
   new Promise (resolve, reject) ->
     states = {}
@@ -101,6 +144,8 @@ module.exports.compile = ->
       convertAsset "client/layouts/#{index.layout}.jade", "build/client/src/#{key}/#{key}.jade", index.components
 
     convertAsset 'client/routes.coffee', 'build/client/src/routes.coffee', model
+    convertAsset 'client/app.coffee', 'build/client/src/app.coffee', _.extend {}, config, model
+
 
   new Promise (resolve, reject) ->
     models = {}
@@ -119,7 +164,7 @@ module.exports.compile = ->
       .walk()
   .then (models) ->
     for key, file of models
-      convertAsset 'client/service.coffee', "build/client/src/services/#{key}Service.coffee", name: key
+      convertAsset 'client/service.coffee', "build/client/src/models/#{key}Service.coffee", name: key
       convertAsset 'server/controller.coffee', "build/server/src/controllers/#{key}Controller.coffee",
         name: key
         titleCase: key #toTitleCase key
@@ -139,13 +184,12 @@ module.exports.compile = ->
     convertAsset 'server/routes.coffee', "build/server/src/routes.coffee",
       models: Object.keys models
 
-    convertAsset 'client/services.index.coffee', "build/client/src/services/index.coffee",
+    convertAsset 'client/services.index.coffee', "build/client/src/models/index.coffee",
       name: config.name
       services: Object.keys models
 
     convertAsset 'server/server.coffee', "build/server/src/server.coffee",
       models: Object.keys models
-
 
 
   new Promise (resolve, reject) ->
