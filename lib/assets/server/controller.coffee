@@ -6,7 +6,7 @@ filter = require '../helpers/filter'
 module.exports = do ->
 
   find = (req, res) ->
-    {{titleCase}}.findAll where: req.query
+    {{titleCase}}.findAll filter.create req.query
       .then ({{name}}s) ->
         res.status 200
         res.send {{name}}s

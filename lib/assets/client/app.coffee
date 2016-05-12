@@ -6,6 +6,7 @@ require 'angular-animate'
 require 'ng-lodash'
 require 'angular-toggle-switch'
 require '../../node_modules/angular-ui-bootstrap/dist/ui-bootstrap-tpls'
+require '../../node_modules/angular-ui-grid/ui-grid'
 require 'angular-scroll'
 
 app = require('angular').module('{{name}}', [
@@ -19,6 +20,8 @@ app = require('angular').module('{{name}}', [
   'angular.filter'
   'LocalStorageModule'
   'ngLodash'
+  'ui.grid'
+  'ui.grid.selection'
   'ui.bootstrap'
   'toggle-switch'
   'duScroll'

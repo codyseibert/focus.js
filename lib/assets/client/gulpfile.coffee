@@ -24,6 +24,12 @@ gulp.task 'copy', ['jade'], ->
     .pipe gulp.dest('dist')
     .pipe connect.reload()
 
+  gulp.src('node_modules/angular-ui-grid/ui-grid.ttf')
+    .pipe gulp.dest('dist')
+
+  gulp.src('node_modules/angular-ui-grid/ui-grid.woff')
+    .pipe gulp.dest('dist')
+
   gulp.src('assets/**/*')
     .pipe gulp.dest('dist/assets')
 

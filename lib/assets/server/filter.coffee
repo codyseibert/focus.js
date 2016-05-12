@@ -2,16 +2,11 @@ module.exports =
   create: (query) ->
     COMMAND_DELIMITOR = '~'
     SPLIT_DELIMITOR = ','
-    DEFAULT_LIMIT = 100
-    MAX_LIMIT = 2000
 
     where = {}
 
     if Object.keys(query).length > 0
       where.$and = {}
-
-    limit = Math.min(MAX_LIMIT, query.limit or DEFAULT_LIMIT)
-    delete query.limit
 
     for key, value of query
       if key.indexOf(COMMAND_DELIMITOR) isnt -1
@@ -26,4 +21,3 @@ module.exports =
         where.$and[key] = value
 
     where: where
-    limit: limit
